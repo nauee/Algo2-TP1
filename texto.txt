@@ -1,0 +1,12 @@
+especie1;velocidad1;peso1;color1
+especie2;velocidad2;peso2;color2
+especie3;velocidad3;peso3;color3
+especie4;velocidad4;peso4;color4
+especie5;velocidad5;peso5;color5
+especie6;velocidad6;peso6;color6
+especie7;velocidad7;peso7;color7
+especie8;velocidad8;peso8;color8
+especie9;velocidad9;peso9;color9
+especie10;velocidad10;peso10;color10
+especie11;velocidad11;peso11;color11
+especie12;velocidad12;peso12;color12
