@@ -13,5 +13,5 @@ int main () {
         printf("%i",(*arrecife_prueba).pokemon[i].peso);
         printf("%s",(*arrecife_prueba).pokemon[i].color);
         printf("\n");
-    }
+    }//comentario
 }
