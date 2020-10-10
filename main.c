@@ -4,15 +4,15 @@
 #include "evento_pesca.h"
 
 int main () {
-    arrecife_t *arrecife_prueba = crear_arrecife("arrecife.txt");
-    printf("%p\n", arrecife_prueba);
-    for (int i = 0; i < (*arrecife_prueba).cantidad_pokemon; i++) {
-        printf("%s\n",(*arrecife_prueba).pokemon[i].especie);
-        printf("%i\n",(*arrecife_prueba).pokemon[i].velocidad);
-        printf("%i\n",(*arrecife_prueba).pokemon[i].peso);
-        printf("%s\n",(*arrecife_prueba).pokemon[i].color);
+    arrecife_t *arrecife = crear_arrecife("arrecife.txt");
+    printf("%p\n", arrecife);
+    for (int i = 0; i < (*arrecife).cantidad_pokemon; i++) {
+        printf("%s\n",(*arrecife).pokemon[i].especie);
+        printf("%i\n",(*arrecife).pokemon[i].velocidad);
+        printf("%i\n",(*arrecife).pokemon[i].peso);
+        printf("%s\n",(*arrecife).pokemon[i].color);
         printf("------------\n");
     }
-    printf("%i\n", (*arrecife_prueba).cantidad_pokemon);
-    free(arrecife_prueba);
+    printf("%i\n", (*arrecife).cantidad_pokemon);
+    liberar_arrecife(arrecife);
 }

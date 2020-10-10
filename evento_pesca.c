@@ -4,18 +4,6 @@
 #include "evento_pesca.h"
 
 #define FORMATO_ARRECIFE "%[^;];%i;%i;%[^\n]\n"
-
-/*
- * Función que dado un archivo carga los pokémon que viven en el arrecife
- * reservando la memoria necesaria para el mismo. Se debe intentar leer la mayor
- * cantidad posible de registros del archivo. Al encontrar el primer registro
- * erróneo (o al llegar al final del archivo) se deben finalizar la lectura y
- * crear el arrecife con los pokémon leídos exitosamente. En caso de no
- * encontrar ningún registro con el formato correcto, se debe devolver error.
- * Devuelve un puntero a un arrecife válido o NULL en caso de error.
- * Es importante notar que tanto
- */
-
 /*
     typedef struct arrecife {
         pokemon_t* pokemon;
@@ -28,6 +16,11 @@
         int peso;
         char color[MAX_COLOR];
     } pokemon_t;
+
+    typedef struct acuario{
+        pokemon_t* pokemon;
+        int cantidad_pokemon;
+    } acuario_t;
 */
 /****************************************************************************************** Crear arrecife *******************************************************************************************/
 
@@ -51,7 +44,15 @@ arrecife_t* crear_arrecife(const char* ruta_archivo){
     }
 
     FILE* arch_arrecife = fopen (ruta_archivo, "r");
+    if (!arch_arrecife) {
+        return NULL;
+    }
+
     arrecife_t *arrecife = malloc(sizeof(arrecife_t));
+    if (arrecife == NULL) {
+        return NULL;
+    }
+
     pokemon_t pokemon_leido;
     arrecife -> cantidad_pokemon = 0;
     int leidos = fscanf(arch_arrecife, FORMATO_ARRECIFE, pokemon_leido.especie, &(pokemon_leido.velocidad), &(pokemon_leido.peso), pokemon_leido.color);
@@ -64,4 +65,11 @@ arrecife_t* crear_arrecife(const char* ruta_archivo){
     fclose (arch_arrecife);
     return arrecife;
 
+}
+
+/***************************************************************************************** Liberar arrecife ******************************************************************************************/
+
+void liberar_arrecife(arrecife_t* arrecife){
+    free (arrecife -> pokemon);
+    free (arrecife);
 }
