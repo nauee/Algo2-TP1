@@ -65,4 +65,3 @@ arrecife_t* crear_arrecife(const char* ruta_archivo){
     return arrecife;
 
 }
-
