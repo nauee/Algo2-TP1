@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "evento_pesca.h"
+
+#define FORMATO_ARRECIFE "%[^;];%i;%i;%[^\n]\n"
+
 /*
  * Función que dado un archivo carga los pokémon que viven en el arrecife
  * reservando la memoria necesaria para el mismo. Se debe intentar leer la mayor
@@ -26,18 +29,19 @@
         char color[MAX_COLOR];
     } pokemon_t;
 */
+/****************************************************************************************** Crear arrecife *******************************************************************************************/
 
-// especie1;velocidad1;peso1;color1
-#define FORMATO_ARRECIFE "%[^;];%i;%i;%[^\n]\n"
-
-arrecife_t* agregar_pokemon(arrecife_t* arrecife, pokemon_t pokemon_leido){
-    pokemon_t *nuevo_pokemon = realloc((*arrecife).pokemon, ((*arrecife).cantidad_pokemon + 1) * sizeof(pokemon_t));
+pokemon_t* agregar_pokemon(pokemon_t* pokemon, pokemon_t pokemon_leido, int cantidad_actual){
+    
+    pokemon_t *nuevo_pokemon = realloc(pokemon, (cantidad_actual + 1) * sizeof(pokemon_t));
+    
     if (nuevo_pokemon == NULL) {
-        return NULL;
+        return pokemon;
     }
-    (*arrecife).pokemon[(*arrecife).cantidad_pokemon] = pokemon_leido;
-    ((*arrecife).cantidad_pokemon) ++;
-    return arrecife;
+
+    pokemon = nuevo_pokemon;
+    pokemon[cantidad_actual] = pokemon_leido;
+    return pokemon;
 }
 
 arrecife_t* crear_arrecife(const char* ruta_archivo){
@@ -49,9 +53,16 @@ arrecife_t* crear_arrecife(const char* ruta_archivo){
     FILE* arch_arrecife = fopen (ruta_archivo, "r");
     arrecife_t *arrecife = malloc(sizeof(arrecife_t));
     pokemon_t pokemon_leido;
+    arrecife -> cantidad_pokemon = 0;
     int leidos = fscanf(arch_arrecife, FORMATO_ARRECIFE, pokemon_leido.especie, &(pokemon_leido.velocidad), &(pokemon_leido.peso), pokemon_leido.color);
     while (leidos == 4) {
-        arrecife = agregar_pokemon(arrecife, pokemon_leido);
+        (arrecife -> pokemon) = agregar_pokemon(arrecife -> pokemon, pokemon_leido, arrecife -> cantidad_pokemon);
+        (arrecife -> cantidad_pokemon) ++;
+        leidos = fscanf(arch_arrecife, FORMATO_ARRECIFE, pokemon_leido.especie, &(pokemon_leido.velocidad), &(pokemon_leido.peso), pokemon_leido.color);
     }
+
+    fclose (arch_arrecife);
     return arrecife;
+
 }
+

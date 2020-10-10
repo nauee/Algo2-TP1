@@ -5,13 +5,14 @@
 
 int main () {
     arrecife_t *arrecife_prueba = crear_arrecife("texto.txt");
-    printf("%p", arrecife_prueba);
-    printf("%i", (*arrecife_prueba).cantidad_pokemon);
+    printf("%i\n", (*arrecife_prueba).cantidad_pokemon);
+    printf("%p\n", arrecife_prueba);
     for (int i = 0; i < (*arrecife_prueba).cantidad_pokemon; i++) {
-        printf("%s",(*arrecife_prueba).pokemon[i].especie);
-        printf("%i",(*arrecife_prueba).pokemon[i].velocidad);
-        printf("%i",(*arrecife_prueba).pokemon[i].peso);
-        printf("%s",(*arrecife_prueba).pokemon[i].color);
-        printf("\n");
-    }//comentarioaaaaaaaaa
+        printf("%s\n",(*arrecife_prueba).pokemon[i].especie);
+        printf("%i\n",(*arrecife_prueba).pokemon[i].velocidad);
+        printf("%i\n",(*arrecife_prueba).pokemon[i].peso);
+        printf("%s\n",(*arrecife_prueba).pokemon[i].color);
+        printf("------------\n");
+    }
+    free(arrecife_prueba);
 }
