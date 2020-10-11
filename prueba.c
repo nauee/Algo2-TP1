@@ -23,10 +23,15 @@ void sacar(int vector[10], int eliminar[4], int *tope_vector, int cant_eliminar)
 int* sacar_heap(int* vector, int* eliminar, int tope_vector, int tope_eliminar) {
     for (int i = 0; i < tope_vector; i++) {
         int cantidad_a_mover = 0;
-        for (int j = 0; j < tope_eliminar; j++) {
+        int j = 0;
+        bool inserto = false;
+        while(j < tope_eliminar && !inserto){
             if (i > eliminar[j]) {
                 cantidad_a_mover = j + 1;
+            } else {
+                inserto = true;
             }
+            j++;
         }
         vector[i - cantidad_a_mover] = vector[i];
     }
@@ -109,20 +114,16 @@ int main() {
     vector[7] = 7;
     vector[8] = 8;
     vector[9] = 9;
-    int* posiciones = NULL;
-    int i = 0;
-    int cant_pos = 0;
-    int cant_selecc = 3;
-    int estado = pasar(vector, tope_vector, &posiciones, &cant_pos, cant_selecc);
-    //int *tmp = agregar_posicion(posiciones, 1, cant_pos);
-   /*if (tmp == NULL) {
-        return -1;
-    } else {
-        posiciones = tmp;
-        (cant_pos) ++;
-     }*/
-    for(int i = 0; i < cant_pos ;i++){
-        printf("%i-",posiciones[i]);
+    int tope_eliminar = 4;
+    int* eliminar = malloc (sizeof(int) * tope_eliminar);
+    eliminar[0] = 0;
+    eliminar[1] = 1;
+    eliminar[2] = 2;
+    eliminar[3] = 9;
+    vector = sacar_heap(vector, eliminar, tope_vector, tope_eliminar);
+    tope_vector -= tope_eliminar;
+    for (int i = 0; i < tope_vector; i++) {
+        printf ("%i -", vector[i]);
     }
     return 0;
 }

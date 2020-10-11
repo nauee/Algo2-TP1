@@ -7,6 +7,7 @@
 /******************************************************************************************** Constantes *********************************************************************************************/
 
 #define FORMATO_ARRECIFE "%[^;];%i;%i;%[^\n]\n"
+#define FORMATO_ACUARIO "%s;%i;%i;%s\n"
 
 /*
     typedef struct arrecife {
@@ -148,15 +149,18 @@ int pasar_al_acuario(arrecife_t* arrecife, acuario_t** acuario, int* pos_traslad
 int sacar_del_arrecife(arrecife_t** arrecife, int* pos_trasladar, int cant_trasladar) {
     for (int i = 0; i < (*(*arrecife)).cantidad_pokemon; i++) {
         int cantidad_a_mover = 0;
-        for (int j = 0; j < cant_trasladar; j++) {
+        int j = 0;
+        bool inserto = false;
+        while(j < cant_trasladar && !inserto){
             if (i > pos_trasladar[j]) {
                 cantidad_a_mover = j + 1;
             }
+            j++;
         }
         ((*(*arrecife)).pokemon)[i - cantidad_a_mover] = ((*(*arrecife)).pokemon)[i];
     }
-    pokemon_t* tmp = realloc( ((*(*arrecife)).pokemon), (size_t)(((*(*arrecife)).cantidad_pokemon) - cant_trasladar) * sizeof(pokemon_t) );
     ((*(*arrecife)).cantidad_pokemon) -= cant_trasladar;
+    pokemon_t* tmp = realloc( ((*(*arrecife)).pokemon), (size_t)((*(*arrecife)).cantidad_pokemon) * sizeof(pokemon_t) );
     if (tmp == NULL) {
         return -1;
     } else {
@@ -184,29 +188,46 @@ int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccion
     return estado;
 }
 
-
 /****************************************************************************************** Censar arrecife ******************************************************************************************/
 
 void censar_arrecife(arrecife_t* arrecife, void (*mostrar_pokemon)(pokemon_t*)) {
     
     printf("|         Especie         | Velocidad |   Peso   |          Color          |\n");
-    for (int i = 0; i < (arrecife -> cantidad_pokemon); i++) {
+    for (int i = 0; i < (*arrecife).cantidad_pokemon; i++) {
         mostrar_pokemon(&((*arrecife).pokemon[i]));
     }
-    printf("En total hay %i pokemones", arrecife -> cantidad_pokemon);
+    printf("En total hay %i pokemones\n", (*arrecife).cantidad_pokemon);
+}
+
+/*************************************************************************************** Guardar datos acuario ***************************************************************************************/
+
+int guardar_datos_acuario(acuario_t* acuario, const char* nombre_archivo) {
+    FILE* arch_acuario = fopen (nombre_archivo, "w");
+    if (!arch_acuario) {
+        return -1;
+    }
+    for(int i = 0; i < (*acuario).cantidad_pokemon; i++) {
+        fprintf(arch_acuario, FORMATO_ACUARIO, ((*acuario).pokemon)[i].especie, ((*acuario).pokemon)[i].velocidad, ((*acuario).pokemon)[i].peso, ((*acuario).pokemon)[i].color);
+    }
+    fclose(arch_acuario);
+    return 0;
 }
 
 /****************************************************************************************** Liberar acuario ******************************************************************************************/
 
 void liberar_acuario(acuario_t* acuario) {
-    free (acuario -> pokemon);
+    if((*acuario).cantidad_pokemon != 0) {
+        free ((*acuario).pokemon);
+    }
     free (acuario);
 }
 
 /***************************************************************************************** Liberar arrecife ******************************************************************************************/
 
 void liberar_arrecife(arrecife_t* arrecife){
-    free (arrecife -> pokemon);
+    if((*arrecife).cantidad_pokemon != 0) {
+        free ((*arrecife).pokemon);
+    }
     free (arrecife);
 }
 
