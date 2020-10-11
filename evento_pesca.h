@@ -73,7 +73,6 @@ int guardar_datos_acuario(acuario_t* acuario, const char* nombre_archivo);
  */
 void liberar_acuario(acuario_t* acuario);
 
-
 /*
  * Libera la memoria que fue reservada para el arrecife.
  */
