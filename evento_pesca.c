@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "evento_pesca.h"
 
 /******************************************************************************************** Constantes *********************************************************************************************/
@@ -29,19 +30,29 @@
 
 /*
 *   Precondiciones: Debe recibir un pokemon leido valido, un puntero a un pokemon valido y una cantidad actual mayor o igual a 0.
-*   Postcondiciones: Devolvera un puntero a un pokemon con el nuevo pokemon agregado (en caso de poder), en caso contrario devolvera el puntero que recibió.
+*   Postcondiciones: Devolvera un puntero a un pokemon con el nuevo pokemon agregado (en caso de poder), en caso contrario devolvera NULL.
 */
-pokemon_t* agregar_pokemon(pokemon_t* pokemon, pokemon_t pokemon_leido, int cantidad_actual){
+pokemon_t* agregar_pokemon(pokemon_t* pokemon, pokemon_t pokemon_agregar, int cantidad_actual){
     
-    pokemon_t *nuevo_pokemon = realloc(pokemon, (cantidad_actual + 1) * sizeof(pokemon_t));
+    pokemon_t *nuevo_pokemon = realloc(pokemon, ((size_t)(cantidad_actual + 1) * sizeof(pokemon_t)));
     
     if (nuevo_pokemon == NULL) {
-        return pokemon;
+        return NULL;
     }
 
     pokemon = nuevo_pokemon;
-    pokemon[cantidad_actual] = pokemon_leido;
+    pokemon[cantidad_actual] = pokemon_agregar;
     return pokemon;
+}
+
+int leer_de_archivo (FILE* arch_arrecife, pokemon_t *pokemon) {
+    char buffer[1024];
+    char* linea = fgets(buffer, 1024, arch_arrecife);
+    if (!linea) {
+        return -1;
+    }
+    int leidos = sscanf(linea, FORMATO_ARRECIFE, (*pokemon).especie, &((*pokemon).velocidad), &((*pokemon).peso), (*pokemon).color);
+    return leidos;
 }
 
 arrecife_t* crear_arrecife(const char* ruta_archivo){
@@ -57,24 +68,28 @@ arrecife_t* crear_arrecife(const char* ruta_archivo){
 
     arrecife_t *arrecife = malloc(sizeof(arrecife_t));
     if (arrecife == NULL) {
+        fclose (arch_arrecife);
         return NULL;
     }
 
     pokemon_t pokemon_leido;
     arrecife -> cantidad_pokemon = 0;
-    int leidos = fscanf(arch_arrecife, FORMATO_ARRECIFE, pokemon_leido.especie, &(pokemon_leido.velocidad), &(pokemon_leido.peso), pokemon_leido.color);
-    while (leidos == 4) {
-        pokemon_leido.color[strlen(pokemon_leido.color) - 1] = 0;
-        (arrecife -> pokemon) = agregar_pokemon(arrecife -> pokemon, pokemon_leido, arrecife -> cantidad_pokemon);
-        (arrecife -> cantidad_pokemon) ++;
-        leidos = fscanf(arch_arrecife, FORMATO_ARRECIFE, pokemon_leido.especie, &(pokemon_leido.velocidad), &(pokemon_leido.peso), pokemon_leido.color);
+    bool error = false;
+    int leidos = leer_de_archivo(arch_arrecife, &pokemon_leido);
+    while (leidos == 4 && !error) {
+        pokemon_t *nuevo_pokemon = agregar_pokemon(arrecife -> pokemon, pokemon_leido, arrecife -> cantidad_pokemon);
+        if (nuevo_pokemon == NULL) {
+            error = true;
+        } else {
+            (*arrecife).pokemon = nuevo_pokemon;
+            ((*arrecife).cantidad_pokemon) ++;
+        }
+        leidos = leer_de_archivo(arch_arrecife, &pokemon_leido);
     }
-
+    fclose (arch_arrecife);
     if (arrecife -> cantidad_pokemon == 0) {
         return NULL;
     }
-
-    fclose (arch_arrecife);
     return arrecife;
 
 }
@@ -91,21 +106,61 @@ acuario_t* crear_acuario () {
     return acuario;
 }
 
-/****************************************************************************************** Censar arrecife ******************************************************************************************/
+/***************************************************************************************** Trasladar pokemon *****************************************************************************************/
 
-void mostrar_pokdemon (pokemon_t* pokemon) {
-    printf("|%-15s", pokemon -> especie);
-    printf("|%-3i", pokemon -> peso);
-    printf("|%-3i", pokemon -> velocidad);
-    printf("|%-15s", pokemon -> color);
-    printf("|\n");
+int encontrar_pokemones_trasladar (arrecife_t* arrecife, bool (*seleccionar_pokemon) (pokemon_t*),int cant_seleccion, int* pos_trasladar, int* cant_trasladar) {
+    int estado = 0;
+    int i = 0;
+    while (i < (*arrecife).cantidad_pokemon && estado == 0){
+        if (seleccionar_pokemon(&(*arrecife).pokemon[i])) {
+            int* nueva_pos_trasladar = NULL;
+            nueva_pos_trasladar = realloc (pos_trasladar, (size_t)((*cant_trasladar) + 1) * (sizeof(int))); 
+            if (nueva_pos_trasladar != NULL) {
+                pos_trasladar = nueva_pos_trasladar;
+                (*cant_trasladar) ++;
+            } else {
+                estado = -1;
+            }
+        }
+        i++;
+    }
+    return estado;
 }
+
+int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccionar_pokemon) (pokemon_t*), int cant_seleccion) {
+    int* pos_trasladar = NULL;
+    int cant_trasladar = 0;
+    int estado = 0;
+    estado = encontrar_pokemones_trasladar(arrecife, seleccionar_pokemon, cant_seleccion, pos_trasladar, &cant_trasladar);
+    /*if (cant_trasladar < cant_seleccion && estado == 0) {
+        free (pos_trasladar);
+        return 0;
+    }
+    if (estado == 0) {
+        estado = pasar_al_acuario(arrecife, acuario, pos_trasladar, cant_trasladar);
+    }
+    if (estado == 0) {
+        estado = sacar_del_arrecife(arrecife, pos_trasladar, cant_trasladar);
+    }*/
+    if (estado==-1){
+        printf("error");
+    } else {
+        for (int i = 0; i < cant_trasladar; i++) {
+            printf("%i - ", pos_trasladar[i]);
+        }
+    }
+    free (pos_trasladar);
+    return estado;
+}
+
+
+/****************************************************************************************** Censar arrecife ******************************************************************************************/
 
 void censar_arrecife(arrecife_t* arrecife, void (*mostrar_pokemon)(pokemon_t*)) {
     
     printf("|         Especie         | Velocidad |   Peso   |          Color          |\n");
     for (int i = 0; i < (arrecife -> cantidad_pokemon); i++) {
-        mostrar_pokdemon(&((*arrecife).pokemon[i]));
+        mostrar_pokemon(&((*arrecife).pokemon[i]));
     }
     printf("En total hay %i pokemones", arrecife -> cantidad_pokemon);
 }
