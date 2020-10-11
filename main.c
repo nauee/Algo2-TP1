@@ -4,10 +4,10 @@
 #include "evento_pesca.h"
 
 void mostrar_pokemon (pokemon_t* pokemon) {
-    printf("|%-25s", (pokemon -> especie));
-    printf("|    %-3i    ", (pokemon -> peso));
-    printf("|    %-3i   ", (pokemon -> velocidad));
-    printf("|%-25s", (pokemon -> color));
+    printf("|  %-23s", (pokemon -> especie));
+    printf("|    %-3i    ", (pokemon -> velocidad));
+    printf("|    %-3i   ", (pokemon -> peso));
+    printf("|  %-23s", (pokemon -> color));
     printf("|\n");
 }
 
@@ -27,9 +27,14 @@ int main () {
     acuario_t *acuario = crear_acuario();
     if (acuario == NULL) return -1;
     censar_arrecife(arrecife, mostrar_pokemon);
-    trasladar_pokemon(arrecife, acuario, prueba_seleccion, 1);
+    trasladar_pokemon(arrecife, acuario, prueba_seleccion, 5);
     getchar();
-    //censar_arrecife(arrecife, mostrar_pokemon);
+    system("clear");
+    for (int i = 0; i < (*acuario).cantidad_pokemon; i++) {
+        mostrar_pokemon(&((*acuario).pokemon[i]));
+    }
+    printf("\n\n");
+    censar_arrecife(arrecife, mostrar_pokemon);
     liberar_arrecife(arrecife);
     liberar_acuario(acuario);
 }

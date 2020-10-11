@@ -40,7 +40,7 @@ int encontrar_eliminar (int* vector, int tope_vector, int* pos_trasladar, int* c
     while (i < tope_vector && estado == 0){
         if (vector[i] % 3 == 0) {
             int* nueva_pos_trasladar = NULL;
-            nueva_pos_trasladar = realloc (pos_trasladar, (size_t)((*cant_trasladar) + 1) * (sizeof(int))); 
+            nueva_pos_trasladar = realloc (pos_trasladar, (sizeof(int))); 
             if (nueva_pos_trasladar != NULL) {
                 pos_trasladar = nueva_pos_trasladar;
                 (*cant_trasladar) ++;
@@ -53,10 +53,51 @@ int encontrar_eliminar (int* vector, int tope_vector, int* pos_trasladar, int* c
     return estado;
 }
 
+int* agregar_posicion(int* posiciones, int pos, int cant_pos){
+    
+    int *tmp = realloc(posiciones, ((size_t)(cant_pos + 1) * sizeof(int)));
+    
+    if (tmp == NULL) {
+        return NULL;
+    }
+
+    posiciones = tmp;
+    posiciones[cant_pos] = pos;
+    return posiciones;
+}
+
+int* agregar_pos(int* posiciones, int cant_posiciones, int posicion) {
+    
+    int *tmp = realloc(posiciones, ((size_t)(cant_posiciones + 1) * sizeof(int)));
+    if (tmp == NULL) {
+        return NULL;
+    }
+    posiciones = tmp;
+    posiciones[cant_posiciones] = posicion;
+    return posiciones;
+}
+
+int pasar(int* vector, int tope, int** posiciones, int* cant_pos, int cant_selecc) {
+    int i = 0;
+    bool error = false;
+    while (i < tope && (*cant_pos) < cant_selecc && !error) {
+        if (vector[i] % 3 == 0){
+            int *tmp = agregar_posicion(*posiciones, i, *cant_pos);
+            if (tmp == NULL) {
+                error = true;
+            } else {
+                *posiciones = tmp;
+                (*cant_pos) ++;
+            }
+        }
+        i++;
+    }
+    return 0;
+}
+
 
 int main() {
     int tope_vector = 10;
-    int tope_eliminar = 4;
     int* vector = malloc (sizeof(int) * tope_vector);
     vector[0] = 0;
     vector[1] = 1;
@@ -68,17 +109,20 @@ int main() {
     vector[7] = 7;
     vector[8] = 8;
     vector[9] = 9;
-    int* eliminar = malloc (sizeof(int) * tope_eliminar);
-    encontrar_eliminar(vector, tope_vector, eliminar, &tope_eliminar);
-    int* nuevo_vector = sacar_heap(vector, eliminar, tope_vector, tope_eliminar);
-    if (nuevo_vector == NULL) {
+    int* posiciones = NULL;
+    int i = 0;
+    int cant_pos = 0;
+    int cant_selecc = 3;
+    int estado = pasar(vector, tope_vector, &posiciones, &cant_pos, cant_selecc);
+    //int *tmp = agregar_posicion(posiciones, 1, cant_pos);
+   /*if (tmp == NULL) {
         return -1;
+    } else {
+        posiciones = tmp;
+        (cant_pos) ++;
+     }*/
+    for(int i = 0; i < cant_pos ;i++){
+        printf("%i-",posiciones[i]);
     }
-    vector = nuevo_vector;
-    tope_vector -= tope_eliminar;
-    free(eliminar);
-    for(int i = 0; i < tope_vector ;i++){
-        printf("%i-",vector[i]);
-    }
-    free(vector);
+    return 0;
 }

@@ -108,15 +108,16 @@ acuario_t* crear_acuario () {
 
 /***************************************************************************************** Trasladar pokemon *****************************************************************************************/
 
-int encontrar_pokemones_trasladar (arrecife_t* arrecife, bool (*seleccionar_pokemon) (pokemon_t*),int cant_seleccion, int* pos_trasladar, int* cant_trasladar) {
+int encontrar_pokemones_trasladar (arrecife_t* arrecife, bool (*seleccionar_pokemon) (pokemon_t*),int cant_seleccion, int** pos_trasladar, int* cant_trasladar) {
     int estado = 0;
     int i = 0;
-    while (i < (*arrecife).cantidad_pokemon && estado == 0){
+    while (i < (*arrecife).cantidad_pokemon && estado == 0 && (*cant_trasladar) < cant_seleccion){
         if (seleccionar_pokemon(&(*arrecife).pokemon[i])) {
             int* nueva_pos_trasladar = NULL;
-            nueva_pos_trasladar = realloc (pos_trasladar, (size_t)((*cant_trasladar) + 1) * (sizeof(int))); 
+            nueva_pos_trasladar = realloc (*pos_trasladar, (size_t)((*cant_trasladar) + 1) * (sizeof(int))); 
             if (nueva_pos_trasladar != NULL) {
-                pos_trasladar = nueva_pos_trasladar;
+                *pos_trasladar = nueva_pos_trasladar;
+                (*pos_trasladar)[(*cant_trasladar)] = i;
                 (*cant_trasladar) ++;
             } else {
                 estado = -1;
@@ -127,27 +128,57 @@ int encontrar_pokemones_trasladar (arrecife_t* arrecife, bool (*seleccionar_poke
     return estado;
 }
 
+int pasar_al_acuario(arrecife_t* arrecife, acuario_t** acuario, int* pos_trasladar, int cant_trasladar) {
+    int i = 0;
+    int estado = 0;
+    while (i < cant_trasladar && estado == 0){
+        pokemon_t* tmp = realloc( ((*(*acuario)).pokemon), (size_t)(((*(*acuario)).cantidad_pokemon) + 1) * sizeof(pokemon_t) );
+        if (tmp == NULL) {
+            estado = -1;
+        } else {
+            (*(*acuario)).pokemon = tmp;
+            (*(*acuario)).pokemon[(*(*acuario)).cantidad_pokemon] = (*arrecife).pokemon[pos_trasladar[i]];
+            ((*(*acuario)).cantidad_pokemon) ++;
+        }
+        i++;
+    }
+    return estado;
+}
+
+int sacar_del_arrecife(arrecife_t** arrecife, int* pos_trasladar, int cant_trasladar) {
+    for (int i = 0; i < (*(*arrecife)).cantidad_pokemon; i++) {
+        int cantidad_a_mover = 0;
+        for (int j = 0; j < cant_trasladar; j++) {
+            if (i > pos_trasladar[j]) {
+                cantidad_a_mover = j + 1;
+            }
+        }
+        ((*(*arrecife)).pokemon)[i - cantidad_a_mover] = ((*(*arrecife)).pokemon)[i];
+    }
+    pokemon_t* tmp = realloc( ((*(*arrecife)).pokemon), (size_t)(((*(*arrecife)).cantidad_pokemon) - cant_trasladar) * sizeof(pokemon_t) );
+    ((*(*arrecife)).cantidad_pokemon) -= cant_trasladar;
+    if (tmp == NULL) {
+        return -1;
+    } else {
+        (*(*arrecife)).pokemon = tmp;
+        return 0;
+    }
+}
+
 int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccionar_pokemon) (pokemon_t*), int cant_seleccion) {
     int* pos_trasladar = NULL;
     int cant_trasladar = 0;
     int estado = 0;
-    estado = encontrar_pokemones_trasladar(arrecife, seleccionar_pokemon, cant_seleccion, pos_trasladar, &cant_trasladar);
-    /*if (cant_trasladar < cant_seleccion && estado == 0) {
+    estado = encontrar_pokemones_trasladar(arrecife, seleccionar_pokemon, cant_seleccion, &pos_trasladar, &cant_trasladar);
+    if (cant_trasladar < cant_seleccion && estado == 0) {
         free (pos_trasladar);
         return 0;
     }
     if (estado == 0) {
-        estado = pasar_al_acuario(arrecife, acuario, pos_trasladar, cant_trasladar);
+        estado = pasar_al_acuario(arrecife, &acuario, pos_trasladar, cant_trasladar);
     }
     if (estado == 0) {
-        estado = sacar_del_arrecife(arrecife, pos_trasladar, cant_trasladar);
-    }*/
-    if (estado==-1){
-        printf("error");
-    } else {
-        for (int i = 0; i < cant_trasladar; i++) {
-            printf("%i - ", pos_trasladar[i]);
-        }
+        estado = sacar_del_arrecife(&arrecife, pos_trasladar, cant_trasladar);
     }
     free (pos_trasladar);
     return estado;
