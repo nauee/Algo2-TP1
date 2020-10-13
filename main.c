@@ -7,6 +7,19 @@
 #define RUTA_ESCRITURA_DEFECTO "acuario.txt"
 #define RUTA_LECTURA_DEFECTO "arrecife.txt"
 #define MAX_FUNCIONES 5
+#define ARGUMENTO_LECTURA 1
+#define ARGUMENTO_ESCRITURA 2
+#define CORRECTO 0
+#define ERROR -1
+#define MINIMO_CANTIDAD 5
+#define RANGO_CANTIDAD 10
+#define MAGIKARP_MAYUS "Magikarp"
+#define MAGIKARP_MINUS "magikarp"
+#define NARANJA_MAYUS "Naranja"
+#define NARANJA_MINUS "naranja"
+#define PESO_BAJO 5
+#define PESO_ALTO 80
+
 
 /*
 *   Precondiciones: Debe recibir un pokemon con sus campos validos.
@@ -69,7 +82,7 @@ void mostrar_como_csv(pokemon_t* pokemon) {
 *   Postcondiciones: Devolvera true si el pokemon pesa mas de 80 y false en caso contrario.
 */
 bool rompe_la_red (pokemon_t* pokemon){
-    return ((*pokemon).peso > 80);
+    return ((*pokemon).peso > PESO_ALTO);
 }
 
 /*
@@ -77,7 +90,7 @@ bool rompe_la_red (pokemon_t* pokemon){
 *   Postcondiciones: Devolvera true si el pokemon pesa menos de 5 y false en caso contrario.
 */
 bool es_peso_pluma (pokemon_t* pokemon){
-    return ((*pokemon).peso < 5);
+    return ((*pokemon).peso < PESO_BAJO);
 }
 
 /*
@@ -85,7 +98,7 @@ bool es_peso_pluma (pokemon_t* pokemon){
 *   Postcondiciones: Devolvera true si el pokemon es de color naranja y false en caso contrario.
 */
 bool es_naranja (pokemon_t* pokemon){
-    return ((strcmp((*pokemon).color, "naranja") == 0) || (strcmp((*pokemon).color, "Naranja") == 0));
+    return ((strcmp((*pokemon).color, NARANJA_MAYUS) == 0) || (strcmp((*pokemon).color, NARANJA_MINUS) == 0));
 }
 
 /*
@@ -101,7 +114,7 @@ bool empieza_con_a (pokemon_t* pokemon){
 *   Postcondiciones: Devolvera true si el pokemon es un magikarp y false en caso contrario.
 */
 bool es_magikarp (pokemon_t* pokemon){
-    return ((strcmp((*pokemon).especie, "magikarp") == 0) || (strcmp((*pokemon).especie, "Magikarp") == 0));
+    return ((strcmp((*pokemon).especie, MAGIKARP_MAYUS) == 0) || (strcmp((*pokemon).especie, MAGIKARP_MINUS) == 0));
 }
 
 /*
@@ -167,8 +180,8 @@ int main (int argc, char** argv) {
     srand((unsigned)time(NULL));
     char* ruta_lectura = NULL;
     char* ruta_escritura = NULL;
-    ruta_lectura = determinar_ruta(argc, argv, ruta_lectura, 1);
-    ruta_escritura = determinar_ruta(argc, argv, ruta_escritura, 2);
+    ruta_lectura = determinar_ruta(argc, argv, ruta_lectura, ARGUMENTO_LECTURA);
+    ruta_escritura = determinar_ruta(argc, argv, ruta_escritura, ARGUMENTO_ESCRITURA);
     bool (*seleccionar_pokemon[MAX_FUNCIONES]) (pokemon_t*);
     void (*mostrar_pokemon[MAX_FUNCIONES])(pokemon_t*);
     asignar_seleccionar_pokemon(seleccionar_pokemon);
@@ -176,20 +189,18 @@ int main (int argc, char** argv) {
 
     arrecife_t *arrecife = crear_arrecife(ruta_lectura);
     if (arrecife == NULL) {
-        return -1;
+        return ERROR;
     }
     acuario_t *acuario = crear_acuario();
     if (acuario == NULL) {
-        return -1;
+        return ERROR;
     }
 
-    int cantidad_requerida = (rand() % 10) + 5;
+    int cantidad_requerida = (rand() % RANGO_CANTIDAD) + MINIMO_CANTIDAD;
     for(int i = 0; i < MAX_FUNCIONES; i++) {
         censar_arrecife(arrecife, mostrar_pokemon[i]);
         trasladar_pokemon(arrecife, acuario, seleccionar_pokemon[i], cantidad_requerida);
-        getchar();
-        system("clear");
-        cantidad_requerida = (rand() % 10) + 5;
+        cantidad_requerida = (rand() % RANGO_CANTIDAD) + MINIMO_CANTIDAD;
     }
 
     censar_arrecife(arrecife, mostrar_pokemon[2]);
@@ -198,5 +209,5 @@ int main (int argc, char** argv) {
     free(ruta_escritura);
     liberar_arrecife(arrecife);
     liberar_acuario(acuario);
-    return 0;
+    return CORRECTO;
 }
