@@ -46,6 +46,11 @@ pokemon_t* agregar_pokemon(pokemon_t* pokemon, pokemon_t pokemon_agregar, int ca
     return pokemon;
 }
 
+/*
+*   Precondiciones: Debe recibir un archivo con el arrecife abierto correctamente.
+*   Postcondiciones: Leera una linea del archiva y la guardara en 
+*   los distintos campos del pokemon.
+*/
 int leer_de_archivo (FILE* arch_arrecife, pokemon_t *pokemon) {
     char buffer[1024];
     char* linea = fgets(buffer, 1024, arch_arrecife);
@@ -109,6 +114,12 @@ acuario_t* crear_acuario () {
 
 /***************************************************************************************** Trasladar pokemon *****************************************************************************************/
 
+/*
+*   Precondiciones: Debe recibir un puntero a un arrecife valido, una puntero a funcion bool,
+*   una cantidad maxima de pokemones, y un vector de posiciones a trasladar con su tope.
+*   Postcondiciones: Llenara el vector de posiciones a trasladar con las posiciones de los pokemones
+*   que hagan a la funcion bool devolver true. Devolvera -1 en caso de error y 0 en caso contrario.
+*/
 int encontrar_pokemones_trasladar (arrecife_t* arrecife, bool (*seleccionar_pokemon) (pokemon_t*),int cant_seleccion, int** pos_trasladar, int* cant_trasladar) {
     int estado = 0;
     int i = 0;
@@ -129,6 +140,14 @@ int encontrar_pokemones_trasladar (arrecife_t* arrecife, bool (*seleccionar_poke
     return estado;
 }
 
+/*
+*   Precondiciones: Debe recibir un puntero doble a un acuario valido, 
+*   un puntero a un vector de posiciones a trasladar y su respectivo tope.
+*   Ademas debe recibir un puntero a un arrecife valido de donde sacar pokemones.
+*   Postcondiciones: Copiara en el acuario los pokemones que esten en el arrecife
+*   en las posiciones indicadas en el vector de posiciones a trasladar.
+*   Devolvera -1 en caso de error y 0 en caso contrario.
+*/
 int pasar_al_acuario(arrecife_t* arrecife, acuario_t** acuario, int* pos_trasladar, int cant_trasladar) {
     int i = 0;
     int estado = 0;
@@ -146,20 +165,27 @@ int pasar_al_acuario(arrecife_t* arrecife, acuario_t** acuario, int* pos_traslad
     return estado;
 }
 
-int sacar_del_arrecife(arrecife_t** arrecife, int* pos_trasladar, int cant_trasladar) {
+/*
+*   Precondiciones: Debe recibir un puntero doble a un arrecife valido, 
+*   un puntero a un vector de posiciones a eliminar y su respectivo tope.
+*   Postcondiciones: Eliminara del vector de pokemones en el arrecife los pokemones 
+*   en las posiciones indicadas en el vector de posiciones a eliminar.
+*   Devolvera -1 en caso de error y 0 en caso contrario.
+*/
+int sacar_del_arrecife(arrecife_t** arrecife, int* pos_eliminar, int cant_eliminar) {
     for (int i = 0; i < (*(*arrecife)).cantidad_pokemon; i++) {
         int cantidad_a_mover = 0;
         int j = 0;
         bool inserto = false;
-        while(j < cant_trasladar && !inserto){
-            if (i > pos_trasladar[j]) {
+        while(j < cant_eliminar && !inserto){
+            if (i > pos_eliminar[j]) {
                 cantidad_a_mover = j + 1;
             }
             j++;
         }
         ((*(*arrecife)).pokemon)[i - cantidad_a_mover] = ((*(*arrecife)).pokemon)[i];
     }
-    ((*(*arrecife)).cantidad_pokemon) -= cant_trasladar;
+    ((*(*arrecife)).cantidad_pokemon) -= cant_eliminar;
     pokemon_t* tmp = realloc( ((*(*arrecife)).pokemon), (size_t)((*(*arrecife)).cantidad_pokemon) * sizeof(pokemon_t) );
     if (tmp == NULL) {
         return -1;
@@ -174,9 +200,8 @@ int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccion
     int cant_trasladar = 0;
     int estado = 0;
     estado = encontrar_pokemones_trasladar(arrecife, seleccionar_pokemon, cant_seleccion, &pos_trasladar, &cant_trasladar);
-    if (cant_trasladar < cant_seleccion && estado == 0) {
-        free (pos_trasladar);
-        return 0;
+    if (cant_trasladar > 0 && cant_trasladar < cant_seleccion && estado == 0) {
+        estado = -1;
     }
     if (estado == 0) {
         estado = pasar_al_acuario(arrecife, &acuario, pos_trasladar, cant_trasladar);
@@ -184,7 +209,9 @@ int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccion
     if (estado == 0) {
         estado = sacar_del_arrecife(&arrecife, pos_trasladar, cant_trasladar);
     }
-    free (pos_trasladar);
+    if (cant_trasladar > 0) {
+        free (pos_trasladar);
+    }
     return estado;
 }
 
@@ -192,7 +219,7 @@ int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccion
 
 void censar_arrecife(arrecife_t* arrecife, void (*mostrar_pokemon)(pokemon_t*)) {
     
-    printf("|         Especie         | Velocidad |   Peso   |          Color          |\n");
+    printf("Datos : Especie - Color - Velocidad - Peso\n\n");
     for (int i = 0; i < (*arrecife).cantidad_pokemon; i++) {
         mostrar_pokemon(&((*arrecife).pokemon[i]));
     }
