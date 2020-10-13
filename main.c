@@ -175,6 +175,36 @@ void asignar_mostrar_pokemon(void (*mostrar_pokemon[MAX_FUNCIONES])(pokemon_t*))
     mostrar_pokemon[4] = mostrar_como_csv;
 }
 
+/*
+*   Postcondiciones: Mostrara por pantalla la indicacion de presionar enter para continuar y esperara a
+*   que el usuario lo presione.
+*/
+void mostrar_presiona_para_continuar() {
+    printf("Presiona ENTER para continuar");
+    getchar();
+}
+
+/*
+*   Postcondiciones: Mostrara la presentacion del programa.
+*/
+void mostrar_presentacion() {
+    printf("⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⣠⣤⣶⣶                                                        ,'\\\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⢰⣿⣿⣿⣿                          _.----.        ____         ,'  _\\   ___    ___     ____\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣀⣾⣿⣿⣿⣿                      _,-'       `.     |    |  /`.   \\,-'    |   \\  /   |   |    \\  |`.\n");
+    printf("⣿⣿⣿⣿⣿⡏⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿                      \\      __    \\    '-.  | /   `.  ___    |    \\/    |   '-.   \\ |  |\n");
+    printf("⣿⣿⣿⣿⣿⣿⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠁⠀⣿                       \\.    \\ \\   |  __  |  |/    ,','_  `.  |          | __  |    \\|  |\n");
+    printf("⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠙⠿⠿⠿⠻⠿⠿⠟⠿⠛⠉⠀⠀⠀⠀⠀⣸⣿                         \\    \\/   /,' _`.|      ,' / / / /   |          ,' _`.|     |  |\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿                          \\     ,-'/  /   \\    ,'   | \\/ / ,`.|         /  /   \\  |     |\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣴⣿⣿⣿⣿                           \\    \\ |   \\_/  |   `-.  \\    `'  /|  |    ||   \\_/  | |\\    |\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⢰⣹⡆⠀⠀⠀⠀⠀⠀⣭⣷⠀⠀⠀⠸⣿⣿⣿⣿                            \\    \\ \\      /       `-.`.___,-' |  |\\  /| \\      /  | |   |\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠈⠉⠀⠀⠤⠄⠀⠀⠀⠉⠁⠀⠀⠀⠀⢿⣿⣿⣿                             \\    \\ `.__,'|  |`-._    `|      |__| \\/ |  `.__,'|  | |   |\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⢾⣿⣷⠀⠀⠀⠀⡠⠤⢄⠀⠀⠀⠠⣿⣿⣷⠀⢸⣿⣿⣿                              \\_.-'       |__|    `-._ |              '-.|     '-.| |   |\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⡀⠉⠀⠀⠀⠀⠀⢄⠀⢀⠀⠀⠀⠀⠉⠉⠁⠀⠀⣿⣿⣿                                                      `'                            '-._|\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿                                          Bienvenido al simulador de pokemon\n");
+    printf("⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿                      \n");
+    mostrar_presiona_para_continuar();
+}
+
 int main (int argc, char** argv) {
 
     srand((unsigned)time(NULL));
@@ -196,11 +226,13 @@ int main (int argc, char** argv) {
         return ERROR;
     }
 
+    mostrar_presentacion();
     int cantidad_requerida = (rand() % RANGO_CANTIDAD) + MINIMO_CANTIDAD;
     for(int i = 0; i < MAX_FUNCIONES; i++) {
         censar_arrecife(arrecife, mostrar_pokemon[i]);
         trasladar_pokemon(arrecife, acuario, seleccionar_pokemon[i], cantidad_requerida);
         cantidad_requerida = (rand() % RANGO_CANTIDAD) + MINIMO_CANTIDAD;
+        mostrar_presiona_para_continuar();
     }
 
     censar_arrecife(arrecife, mostrar_pokemon[2]);

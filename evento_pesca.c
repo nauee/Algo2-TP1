@@ -193,7 +193,7 @@ int sacar_del_arrecife(arrecife_t** arrecife, int* pos_eliminar, int cant_elimin
     }
     ((*(*arrecife)).cantidad_pokemon) -= cant_eliminar;
     pokemon_t* tmp = realloc( ((*(*arrecife)).pokemon), (size_t)((*(*arrecife)).cantidad_pokemon) * sizeof(pokemon_t) );
-    if (tmp == NULL) {
+    if (tmp == NULL && (*(*arrecife)).cantidad_pokemon != 0) {
         return ERROR;
     } else {
         (*(*arrecife)).pokemon = tmp;
