@@ -154,17 +154,17 @@ int encontrar_pokemones_trasladar (arrecife_t* arrecife, bool (*seleccionar_poke
 *   en las posiciones indicadas en el vector de posiciones a trasladar.
 *   Devolvera -1 en caso de error y 0 en caso contrario.
 */
-int pasar_al_acuario(arrecife_t* arrecife, acuario_t** acuario, int* pos_trasladar, int cant_trasladar) {
+int pasar_al_acuario(arrecife_t* arrecife, acuario_t* acuario, int* pos_trasladar, int cant_trasladar) {
     int i = 0;
     int estado = CORRECTO;
     while (i < cant_trasladar && estado == CORRECTO){
-        pokemon_t* tmp = realloc( ((*(*acuario)).pokemon), (size_t)(((*(*acuario)).cantidad_pokemon) + 1) * sizeof(pokemon_t) );
+        pokemon_t* tmp = realloc( ((*acuario).pokemon), (size_t)(((*acuario).cantidad_pokemon) + 1) * sizeof(pokemon_t) );
         if (tmp == NULL) {
             estado = ERROR;
         } else {
-            (*(*acuario)).pokemon = tmp;
-            (*(*acuario)).pokemon[(*(*acuario)).cantidad_pokemon] = (*arrecife).pokemon[pos_trasladar[i]];
-            ((*(*acuario)).cantidad_pokemon) ++;
+            (*acuario).pokemon = tmp;
+            (*acuario).pokemon[(*acuario).cantidad_pokemon] = (*arrecife).pokemon[pos_trasladar[i]];
+            ((*acuario).cantidad_pokemon) ++;
         }
         i++;
     }
@@ -178,8 +178,8 @@ int pasar_al_acuario(arrecife_t* arrecife, acuario_t** acuario, int* pos_traslad
 *   en las posiciones indicadas en el vector de posiciones a eliminar.
 *   Devolvera -1 en caso de error y 0 en caso contrario.
 */
-int sacar_del_arrecife(arrecife_t** arrecife, int* pos_eliminar, int cant_eliminar) {
-    for (int i = 0; i < (*(*arrecife)).cantidad_pokemon; i++) {
+int sacar_del_arrecife(arrecife_t* arrecife, int* pos_eliminar, int cant_eliminar) {
+    for (int i = 0; i < (*arrecife).cantidad_pokemon; i++) {
         int cantidad_a_mover = NO_CANTIDAD;
         int j = 0;
         bool inserto = false;
@@ -189,14 +189,14 @@ int sacar_del_arrecife(arrecife_t** arrecife, int* pos_eliminar, int cant_elimin
             }
             j++;
         }
-        ((*(*arrecife)).pokemon)[i - cantidad_a_mover] = ((*(*arrecife)).pokemon)[i];
+        ((*arrecife).pokemon)[i - cantidad_a_mover] = ((*arrecife).pokemon)[i];
     }
-    ((*(*arrecife)).cantidad_pokemon) -= cant_eliminar;
-    pokemon_t* tmp = realloc( ((*(*arrecife)).pokemon), (size_t)((*(*arrecife)).cantidad_pokemon) * sizeof(pokemon_t) );
-    if (tmp == NULL && (*(*arrecife)).cantidad_pokemon != 0) {
+    ((*arrecife).cantidad_pokemon) -= cant_eliminar;
+    pokemon_t* tmp = realloc( ((*arrecife).pokemon), (size_t)((*arrecife).cantidad_pokemon) * sizeof(pokemon_t) );
+    if (tmp == NULL && (*arrecife).cantidad_pokemon != 0) {
         return ERROR;
     } else {
-        (*(*arrecife)).pokemon = tmp;
+        (*arrecife).pokemon = tmp;
         return CORRECTO;
     }
 }
@@ -210,10 +210,10 @@ int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccion
         estado = ERROR;
     }
     if (estado == CORRECTO) {
-        estado = pasar_al_acuario(arrecife, &acuario, pos_trasladar, cant_trasladar);
+        estado = pasar_al_acuario(arrecife, acuario, pos_trasladar, cant_trasladar);
     }
     if (estado == CORRECTO) {
-        estado = sacar_del_arrecife(&arrecife, pos_trasladar, cant_trasladar);
+        estado = sacar_del_arrecife(arrecife, pos_trasladar, cant_trasladar);
     }
     if (cant_trasladar > NO_CANTIDAD) {
         free (pos_trasladar);
