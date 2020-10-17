@@ -78,14 +78,16 @@ arrecife_t* crear_arrecife(const char* ruta_archivo){
         return NULL;
     }
 
-    arrecife_t *arrecife = malloc(sizeof(arrecife_t));
+    arrecife_t *arrecife;
+    arrecife = malloc(sizeof(arrecife_t));
     if (arrecife == NULL) {
         fclose (arch_arrecife);
         return NULL;
     }
+    (*arrecife).pokemon = NULL;
+    (*arrecife).cantidad_pokemon = NO_POKEMONES;
 
     pokemon_t pokemon_leido;
-    (*arrecife).cantidad_pokemon = NO_POKEMONES;
     bool error = false;
     int leidos = leer_de_archivo(arch_arrecife, &pokemon_leido);
     while (leidos == CANT_LEER && !error) {
@@ -100,6 +102,7 @@ arrecife_t* crear_arrecife(const char* ruta_archivo){
     }
     fclose (arch_arrecife);
     if ((*arrecife).cantidad_pokemon == NO_POKEMONES) {
+        free(arrecife);
         return NULL;
     }
     return arrecife;
@@ -202,11 +205,16 @@ int sacar_del_arrecife(arrecife_t* arrecife, int* pos_eliminar, int cant_elimina
 }
 
 int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccionar_pokemon) (pokemon_t*), int cant_seleccion) {
+    
+    if (cant_seleccion == 0){
+        return CORRECTO;
+    }
+    
     int* pos_trasladar = NULL;
     int cant_trasladar = NO_CANTIDAD;
     int estado = CORRECTO;
     estado = encontrar_pokemones_trasladar(arrecife, seleccionar_pokemon, cant_seleccion, &pos_trasladar, &cant_trasladar);
-    if (cant_trasladar > NO_CANTIDAD && cant_trasladar < cant_seleccion && estado == CORRECTO) {
+    if (cant_trasladar == NO_CANTIDAD || cant_trasladar < cant_seleccion) {
         estado = ERROR;
     }
     if (estado == CORRECTO) {

@@ -1,5 +1,7 @@
 **************************************************************************************** Nahuel Castro 106551 *****************************************************************************************
 
+Aclaracion: Se modifico el nombre del makefile por errores en las pruebas, modificar manualmente a "makefile"
+
 Funcionamiento:
     
     El trabajo se basa en una biblioteca que consta de 7 funciones, las cuales son:

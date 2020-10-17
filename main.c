@@ -217,12 +217,19 @@ int main (int argc, char** argv) {
     asignar_seleccionar_pokemon(seleccionar_pokemon);
     asignar_mostrar_pokemon(mostrar_pokemon);
 
-    arrecife_t *arrecife = crear_arrecife(ruta_lectura);
+    arrecife_t *arrecife = NULL;
+    arrecife = crear_arrecife(ruta_lectura);
     if (arrecife == NULL) {
+        free(ruta_lectura);
+        free(ruta_escritura);
         return ERROR;
     }
-    acuario_t *acuario = crear_acuario();
+    acuario_t *acuario = NULL;
+    acuario = crear_acuario();
     if (acuario == NULL) {
+        liberar_arrecife(arrecife);
+        free(ruta_lectura);
+        free(ruta_escritura);
         return ERROR;
     }
 
