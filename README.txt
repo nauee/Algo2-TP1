@@ -72,5 +72,15 @@ Explicaciones:
         caso esta direccion se refiere a una funcion. Esto nos permite muchas cosas
         como por ejemplo pasar funciones como parametro. Tienen la siguiente sintaxis:
         tipo (*nombre_funcion) (parametro1, ..., parametroN)
+    Malloc:
+        Reserva un bloque de memoria del tamaño recibido como parametro, devuelve la direccion del
+        primer elemento del bloque si es que pudo reservarlo o NULL en caso contrario.
+        Sintaxis: malloc ((size_t) tamaño);
+    Realloc:
+        Cambiara el tamaño del bloque de memoria reservado por el nuevo tamaño recibido como parametro,
+        devolvera la direccion del primer elemento del bloque si es que pudo reservalo o NULL en caso contrario.
+        Practicamente, hacer realloc es como hacer un free y un malloc nuevo, por lo que un realloc con un tamaño
+        de 0 es como hacer un free.
+        Sintaxis: realloc ((void*) direccion_del_bloque_a_modificar, (size_t) tamaño_del_nuevo_bloque);
 
 *******************************************************************************************************************************************************************************************************
