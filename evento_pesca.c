@@ -15,24 +15,6 @@
 #define ERROR -1
 #define NO_CANTIDAD 0
 
-/*
-    typedef struct arrecife {
-        pokemon_t* pokemon;
-        int cantidad_pokemon;
-    } arrecife_t;
-
-    typedef struct pokemon{
-        char especie[MAX_ESPECIE];
-        int velocidad;
-        int peso;
-        char color[MAX_COLOR];
-    } pokemon_t;
-
-    typedef struct acuario{
-        pokemon_t* pokemon;
-        int cantidad_pokemon;
-    } acuario_t;
-*/
 /****************************************************************************************** Crear arrecife *******************************************************************************************/
 
 /*
@@ -206,7 +188,7 @@ int sacar_del_arrecife(arrecife_t* arrecife, int* pos_eliminar, int cant_elimina
 
 int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccionar_pokemon) (pokemon_t*), int cant_seleccion) {
     
-    if (cant_seleccion == 0){
+    if (cant_seleccion == NO_CANTIDAD){
         return CORRECTO;
     }
     
@@ -233,7 +215,7 @@ int trasladar_pokemon(arrecife_t* arrecife, acuario_t* acuario, bool (*seleccion
 
 void censar_arrecife(arrecife_t* arrecife, void (*mostrar_pokemon)(pokemon_t*)) {
     
-    printf("Datos : Especie - Color - Velocidad - Peso\n\n");
+    printf("\n\nDatos : Especie - Color - Velocidad - Peso\n\n");
     for (int i = 0; i < (*arrecife).cantidad_pokemon; i++) {
         mostrar_pokemon(&((*arrecife).pokemon[i]));
     }

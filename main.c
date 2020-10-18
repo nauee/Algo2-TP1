@@ -236,14 +236,30 @@ int main (int argc, char** argv) {
     mostrar_presentacion();
     int cantidad_requerida = (rand() % RANGO_CANTIDAD) + MINIMO_CANTIDAD;
     for(int i = 0; i < MAX_FUNCIONES; i++) {
-        censar_arrecife(arrecife, mostrar_pokemon[i]);
-        trasladar_pokemon(arrecife, acuario, seleccionar_pokemon[i], cantidad_requerida);
+        if ((*arrecife).cantidad_pokemon == 0) {
+            printf("\n\nNo quedan mas pokemones en el acuario\n");
+        } else {
+            censar_arrecife(arrecife, mostrar_pokemon[i]);
+        }
+        if (trasladar_pokemon(arrecife, acuario, seleccionar_pokemon[i], cantidad_requerida) == 0) {
+            printf("Se trasladaron con exito %i pokemon/es\n", cantidad_requerida);
+        } else {
+            printf("Hubo un problema al trasladar los pokemon/es\n");
+        }
         cantidad_requerida = (rand() % RANGO_CANTIDAD) + MINIMO_CANTIDAD;
         mostrar_presiona_para_continuar();
     }
 
-    censar_arrecife(arrecife, mostrar_pokemon[2]);
-    guardar_datos_acuario(acuario, ruta_escritura);
+    if ((*arrecife).cantidad_pokemon == 0) {
+        printf("\n\nNo quedan mas pokemones en el acuario\n");
+    } else {
+        censar_arrecife(arrecife, mostrar_pokemon[2]);;
+    }
+    if (guardar_datos_acuario(acuario, ruta_escritura) == 0){
+        printf("Se guardo correctamente el archivo del acuario\n");
+    } else {
+        printf("Hubo algun problema al escribir el archivo de acuario\n");
+    }
     free(ruta_lectura);
     free(ruta_escritura);
     liberar_arrecife(arrecife);
